@@ -9,7 +9,9 @@
         "@schematics/angular:component": {
           "inlineTemplate": true,
           "inlineStyle": true,
-          "skipTests": true
+          "skipTests": true,
+          "path": "src/components",
+          "flat": true
         },
         "@schematics/angular:class": {
           "skipTests": true
@@ -22,6 +24,10 @@
         },
         "@schematics/angular:interceptor": {
           "skipTests": true
+        },
+        "@schematics/angular:interface": {
+          "path": "src/interfaces",
+          "type": "interface"
         },
         "@schematics/angular:pipe": {
           "skipTests": true
@@ -83,6 +89,10 @@
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "host": "0.0.0.0",
+            "port": 4201
+          },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
