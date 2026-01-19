@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+.btn-hvr {
+    @apply hover:brightness-110;
+    @apply cursor-pointer;
+    @apply transition-all duration-300;
+}
+
+.task{
+    h2 {
+        @apply text-2xl text-slate-700
+    }
+
+    p{
+        @apply text-sm
+    }
+}
+.completed {
+    @apply opacity-50;
+
+    h2, p{
+        @apply line-through;
+    }
+}
