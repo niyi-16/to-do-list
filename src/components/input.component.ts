@@ -1,7 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-
-import { TaskService} from '../components/tasks.component';
+import { TaskService} from '../services/task.service';
 
 @Component({
     selector: 'inputField',
