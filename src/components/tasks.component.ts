@@ -35,18 +35,18 @@ import {TaskService} from "../services/task.service"
                              <h2 class="col-start-1 row-start-1">{{ task.name }}</h2>
                              <p class="col-start-1 row-start-2">{{ task.description }}</p>
 
-                             <div class="col-start-2 row-span-2 flex justify-between">
+                             <div class="col-start-2 row-span-2 flex w-2/3 justify-between place-self-center-safe">
                                   <button (click)="taskService.completeTask(task.id)"
-                                          class="btn-hvr rounded-lg p-4 w-1/3 bg-green-300">
-                                       Done
+                                          class="btn-hvr rounded-lg p-4 bg-green-300">
+                                       <img class="w-6" src="/edit.svg" alt="Done icon">
                                   </button>
                                   <button (click)="taskService.edit(task.id)"
-                                          class="btn-hvr rounded-lg p-4 w-1/3 bg-blue-300">
-                                       Edit
+                                          class="btn-hvr rounded-lg p-4 bg-blue-300">
+                                       <img class="w-6" src="/details.svg" alt="Edit button">
                                   </button>
                                   <button (click)="taskService.deleteTask(task.id)"
-                                          class="btn-hvr rounded-lg p-4 w-1/3 bg-red-600">
-                                       Delete
+                                          class="btn-hvr rounded-lg p-4 bg-red-600">
+                                       <img class="w-6" src="/delete.svg" alt="Delete icon">
                                   </button>
                              </div>
                         }
@@ -85,9 +85,10 @@ export class TasksComponent implements OnInit{
                         <h2 class="col-start-1 row-start-1">{{ r_task.name }}</h2>
                         <p class="col-start-1 row-start-2">{{ r_task.description }}</p>
 
-                        <div class="col-start-2 row-span-2 flex justify-between outline">
+                        <div class="col-start-2 row-span-2 mr-3 justify-between place-self-end">
                              <button (click)="taskService.restoreTask(r_task.id)"
-                                     class="btn-hvr rounded-lg p-4 w-20 bg-black text-white">Restore
+                                     class="btn-hvr rounded-lg px-4 py-2 bg-black text-white">
+                                  Restore
                              </button>
                         </div>
                    </div>
