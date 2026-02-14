@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  ViewContainerRef, ViewRef,
+
+} from '@angular/core';
 import { myInput} from '../components/input.component';
 import { TasksComponent} from "../components/tasks.component";
 import {RouterLink, RouterOutlet} from "@angular/router";
@@ -14,18 +20,28 @@ import {RouterLink, RouterOutlet} from "@angular/router";
       </div>
       
       <!--main body-->
-      <section class="flex-1 place-items-center bg-blend-color">
+      <section class="flex-1 flex flex-col place-items-center">
+        
         <div class="flex outline-1 w-3/7 shadow-xl mt-6">
           <div routerLink="" 
               class="w-1/2 text-center p-3 outline bg-neutral-200 hover:cursor-pointer hover:brightness-50">TASKS</div>
           <div routerLink="deleted" 
               class="w-1/2 text-center p-3 outline bg-red-200 hover:cursor-pointer hover:brightness-50">DELETED</div>
-        </div>  
-        
-        <div class="mt-6 outline-1 w-3/7 p-3 shadow-xl shadow-gray-600/100 ">
-          <inputField class="flex flex-col justify-evenly w-full p-2"/>
-          <router-outlet />
         </div>
+        
+        <div>
+          <button (click)="elementsDisplay.tasks.set(!elementsDisplay.tasks())"
+                class="my-3 btn-hvr rounded-lg bg-blue-300 p-4">Add New Task</button>
+        </div>
+
+        
+        <router-outlet  />
+        
+          @if (elementsDisplay.tasks()){
+            <inputField [(visible)]="elementsDisplay.tasks" class="absolute z-20 mt-6 outline-1 w-1/3 p-3 
+            bg-neutral-100 shadow-xl shadow-gray-600/100 " />
+          }
+            
       </section>
     </main>
 
@@ -40,4 +56,28 @@ import {RouterLink, RouterOutlet} from "@angular/router";
 })
 export class AppComponent {
   title = 'to-do-list';
+  self = inject(ViewContainerRef)
+  // div = viewChild(myInput)
+  elementsDisplay = {
+    tasks: signal(false),
+  }
+
+  constructor(){
+    console.log(window.innerHeight, window.outerHeight, window.scrollY)
+
+    document.addEventListener("keydown", (key) => {
+      if (key.altKey && key.key === "a") {
+        console.log("Alt + A pressed")
+        this.elementsDisplay.tasks.set(!this.elementsDisplay.tasks())
+      }
+    })
+
+  }
+
+  ngAfterViewInit(){
+    this.self.element.nativeElement.onKeyDown = (key:KeyboardEvent) =>
+      console.log(key)
+
+  }
+
 }

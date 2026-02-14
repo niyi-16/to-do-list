@@ -11,7 +11,8 @@
           "inlineStyle": true,
           "skipTests": true,
           "path": "src/components",
-          "flat": true
+          "flat": true,
+          "displayBlock": true
         },
         "@schematics/angular:class": {
           "skipTests": true

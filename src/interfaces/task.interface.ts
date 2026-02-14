@@ -6,4 +6,5 @@ export interface Task {
     edit?: boolean;
     deleted?: boolean;
     createdAt?: string;
+    dateDue?: string;
 }

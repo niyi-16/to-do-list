@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import {DatabaseSync} from "node:sqlite"
 
-let port = 3000;
+let port = 3001;
 let app = express();
 
 app.use(cors())
@@ -15,7 +15,13 @@ app.get("/tasks", (req, res) => {
 
     let tasks = db.prepare("SELECT * FROM tasks where deleted = 0").all();
 
-    res.json(tasks)
+    res.status(200).send(
+        {
+            message: "Hello",
+            data: tasks
+        }
+    )
+
 })
 
 // GET DELETED TASKS
@@ -33,11 +39,11 @@ app.post("/tasks", (req, res) => {
     let body = req.body;
     console.log(body);
 
-    let insert = db.prepare(`INSERT INTO tasks (id, name, description, completed, created_at)
-        VALUES (?, ?, ?, ?, current_timestamp)`)
+    let insert = db.prepare(`INSERT INTO tasks (id, name, description, completed, created_at, dateDue)
+        VALUES (?, ?, ?, ?, current_timestamp, ?)`)
 
     try {
-        insert.run(body.id.toString(), body.name, body.description, body.completed? 1: 0)
+        insert.run(body.id.toString(), body.name, body.description, body.completed? 1: 0, body.dateDue)
         res.send("Task added")
     }
     catch (e) {

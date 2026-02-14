@@ -7,6 +7,11 @@
     @apply transition-all duration-300;
 }
 
+.btn-hvr-drkn{
+    @apply hover:brightness-50;
+    @apply cursor-pointer;
+    @apply transition-all duration-300;
+}
 .task{
     h2 {
         @apply text-2xl text-slate-700
@@ -22,4 +27,20 @@
     h2, p{
         @apply line-through;
     }
+}
+
+.debug-r{
+    @apply outline-2 outline-red-500 outline-dashed;
+}
+
+.debug-b{
+    @apply outline-2 outline-sky-500 outline-dashed;
+}
+
+.debug-g{
+    @apply outline-2 outline-green-500 outline-dashed;
+}
+
+.debug-bk{
+    @apply outline-2 outline-black outline-dashed;
 }
