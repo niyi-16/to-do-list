@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import fs from 'fs'
 import {DatabaseSync} from "node:sqlite"
 
 let port = 3001;
@@ -8,6 +9,25 @@ let app = express();
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//creates database if it doesn't exist
+if (!fs.existsSync('src/tasks.db')) {
+    console.log("Database doesn't exist, creating...")
+    const db = new DatabaseSync('src/tasks.db')
+    db.exec(`create table tasks
+             (
+                 id          varchar(12)
+                     primary key,
+                 name        varchar(255),
+                 description varchar(225),
+                 completed   boolean default false,
+                 created_at  timestamp,
+                 deleted     boolean default false,
+                 dateDue     date
+             );`)
+}
+
+else console.log("Database already exists")
 
 // GET ALL OPEN TASKS
 app.get("/tasks", (req, res) => {
@@ -44,7 +64,7 @@ app.post("/tasks", (req, res) => {
 
     try {
         insert.run(body.id.toString(), body.name, body.description, body.completed? 1: 0, body.dateDue)
-        res.send("Task added")
+        res.status(201).send({message: "Task added"})
     }
     catch (e) {
         res.status(404).send(e)
@@ -54,13 +74,23 @@ app.post("/tasks", (req, res) => {
 
 //update task
 app.patch("/tasks", (req, res) => {
-    const {id, ...others} = req.query
+    const {id, ...others} = req.body
 
     if (!id) return res.status(404).send("No id provided")
 
     const db = new DatabaseSync('src/tasks.db')
 
-    Object.keys(others).forEach(key => {})
+    const updates = Object.keys(others).map(key => `${key} = ?`).join(', ')
+    const values = Object.values(others)
+
+    if (updates.length === 0) return res.status(400).send("No fields to update")
+
+    try {
+        db.prepare(`UPDATE tasks SET ${updates} WHERE id = ?`).run(...values, id.toString())
+        res.send({message: "Task updated"})
+    } catch (e) {
+        res.status(500).send(e)
+    }
 })
 
 //'delete' task
@@ -71,8 +101,8 @@ app.patch("/delete", (req, res) => {
 
     const db = new DatabaseSync('src/tasks.db')
 
-    db.prepare(`Update tasks set deleted = true WHERE id = ? `).run(id)
-    res.send("Task deleted")
+    db.prepare(`Update tasks set deleted = 1 WHERE id = ? `).run(id.toString())
+    res.send({message: "Task deleted"})
 })
 
 app.patch("/restore", (req, res) => {
@@ -82,9 +112,10 @@ app.patch("/restore", (req, res) => {
 
     const db = new DatabaseSync('src/tasks.db')
 
-    db.prepare(`Update tasks set deleted = false WHERE id = ? `).run(id)
-    res.send("Task restored!")
+    db.prepare(`Update tasks set deleted = 0 WHERE id = ? `).run(id.toString())
+    res.send({message: "Task restored!"})
 })
+
 app.listen(port, (error) =>{
     console.log(`Example app listening on port http://localhost:${port}`)});
 
