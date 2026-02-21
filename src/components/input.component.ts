@@ -7,27 +7,51 @@ import {TaskService} from '../services/task.service';
     imports: [ReactiveFormsModule],
     standalone: true,
     template: `
-         <div class="flex flex-col justify-evenly max-w-1/1 p-2">
-             <button (click)="visible.set(!visible())" class="btn-hvr-drkn bg-gray-200 w-1/16 self-end rounded-2xl">X</button>
-              <div class="flex flex-row gap-4">
-                   <input
-                           type='text' placeholder="Enter Task Name"
-                           [formControl]="taskForm.controls.name"
-                           class="block min-w-3/4 bg-gray-200 py-1.5 px-1 text-base my-2  text-gray-900 placeholder:text-gray-400 
-                focus:outline-green-600 sm:text-sm/6">
-
-                   <input type="date"
-                          [formControl]="taskForm.controls.date"
-                          class="block bg-gray-200 w-1/4 py-1.5 px-1 text-base my-2  text-gray-900 placeholder:text-gray-400 ">
+         <div class="flex flex-col gap-4">
+              <div class="flex justify-between items-center mb-2">
+                   <h3 class="text-xl font-bold text-slate-800">Create New Task</h3>
+                   <button (click)="visible.set(false)" 
+                           class="p-2 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                   </button>
               </div>
 
+              <div class="flex flex-col gap-4">
+                   <div class="flex flex-col gap-1">
+                        <label class="text-sm font-semibold text-slate-600 ml-1">Task Title</label>
+                        <input type='text' placeholder="What needs to be done?"
+                               [formControl]="taskForm.controls.name"
+                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 placeholder:text-slate-400">
+                   </div>
 
-              <textarea [formControl]="taskForm.controls.description"
-                        class="block min-w-0 min-h-50 bg-gray-200 py-1.5 px-1 text-base my-2 resize-none text-gray-900 placeholder:text-gray-400 
-                focus:outline sm:text-sm/6" placeholder="Enter Description"></textarea>
-              <button (click)="taskService.addTask(this.taskForm.controls)"
-                      class="rounded-lg p-3 bg-green-200 hover:brightness-112 cursor-pointer">Add Task
-              </button>
+                   <div class="flex flex-col gap-1">
+                        <label class="text-sm font-semibold text-slate-600 ml-1">Due Date</label>
+                        <input type="date"
+                               [formControl]="taskForm.controls.date"
+                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800">
+                   </div>
+
+                   <div class="flex flex-col gap-1">
+                        <label class="text-sm font-semibold text-slate-600 ml-1">Description</label>
+                        <textarea [formControl]="taskForm.controls.description"
+                                  rows="4"
+                                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 placeholder:text-slate-400 resize-none" 
+                                  placeholder="Add some details..."></textarea>
+                   </div>
+              </div>
+
+              <div class="flex gap-3 mt-4">
+                   <button (click)="visible.set(false)"
+                           class="flex-1 px-6 py-3 border border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-colors">
+                        Cancel
+                   </button>
+                   <button (click)="taskService.addTask(this.taskForm.controls); visible.set(false)"
+                           class="flex-1 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-[0.98]">
+                        Create Task
+                   </button>
+              </div>
          </div>
     `,
 })
@@ -47,17 +71,7 @@ export class myInput {
     });
 
     ngOnInit(){
-        const top = this.self.element.nativeElement.offsetTop
-        const height = this.self.element.nativeElement.clientHeight
-        console.log(
-            {
-                "innerheight": window.innerHeight,
-                "scrollY": window.scrollY,
-                "selfHeight": this.self.element.nativeElement.clientHeight,
-                "selfTop": this.self.element.nativeElement.offsetTop,
-            })
-
-        this.self.element.nativeElement.style.top = `${window.scrollY + (window.innerHeight - height)*.5}px`
+        // Position logic removed as it's now handled by modal container in app.component
     }
     ngOnDestroy(){
         console.log("Component was killed")
