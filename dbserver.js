@@ -93,6 +93,25 @@ app.patch("/tasks", (req, res) => {
     }
 })
 
+
+//complete task
+app.patch("/complete", (req, res) => {
+    const {id} = req.query
+
+    if (!id) return res.status(404).send("No id provided")
+
+    const db = new DatabaseSync('src/tasks.db')
+
+    db.prepare(`Update tasks set completed = case
+                when 
+                    completed = 0 
+                        then 1 else 0
+                    end
+                WHERE id = ? `).run(id.toString())
+    res.send({message: "Task Completed!"})
+})
+
+
 //'delete' task
 app.patch("/delete", (req, res) => {
     const {id} = req.query
