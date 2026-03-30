@@ -1,59 +1,92 @@
-# ToDoList
+# To-Do List Application
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.8.
+A modern, clean, and professional To-Do List application built with **Angular 19** and **Tailwind CSS**, featuring a **Node.js/Express** backend with **SQLite** for data persistence.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Task Management**: Create, update, complete, and delete tasks.
+- **Date Grouping**: Tasks are automatically grouped by their due dates for better organization.
+- **Modern UI**: Styled with Tailwind CSS, featuring a responsive design, modal overlays, and clean typography.
+- **Recycle Bin**: Restore deleted tasks from the "Deleted" view.
+- **Persistent Storage**: Data is stored locally in a SQLite database.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18.x or later recommended)
+- [npm](https://www.npmjs.com/) (usually comes with Node.js)
+- [Angular CLI](https://angular.dev/tools/cli) (v19 or later)
+
+## Getting Started
+
+### 1. Clone the repository
 
 ```bash
-ng serve
+git clone https://github.com/niyi-16/to-do-list.git
+cd to-do-list
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 2. Install dependencies
 
-## Code scaffolding
+```bash
+npm install
+```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 3. Start the Backend Server
+
+The application requires a backend server to handle data persistence. Run the following command in a terminal:
+
+```bash
+npm run dbserver
+```
+
+This will start the Express server at `http://localhost:3001`. On the first run, it will automatically create a SQLite database file at `src/tasks.db`.
+
+### 4. Start the Frontend Development Server
+
+In a **separate terminal window**, run:
+
+```bash
+npm start
+```
+
+Once the server is running, open your browser and navigate to `http://localhost:4201/`.
+
+## Development Commands
+
+### Code Scaffolding
+
+To generate a new component, run:
 
 ```bash
 ng generate component component-name
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Building
+
+To build the project for production:
 
 ```bash
-ng generate --help
+npm run build
 ```
 
-## Building
+The build artifacts will be stored in the `dist/` directory.
 
-To build the project run:
+## Project Structure
 
-```bash
-ng build
+```text
+.
+├── angular.json
+├── dbserver.js         # Node.js/Express server logic
+├── package.json
+├── public/             # Static assets (SVG icons, favicon)
+├── src/
+│   ├── app/            # Main application component and config
+│   ├── components/     # Reusable UI components (Tasks, Input, etc.)
+│   ├── interfaces/     # TypeScript interfaces (Task)
+│   ├── services/       # Angular services (TaskService)
+│   ├── styles.css      # Global styles (Tailwind CSS)
+│   └── tasks.db        # SQLite database file (auto-generated)
+├── tsconfig.json
+└── start-task-list.sh
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
