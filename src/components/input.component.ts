@@ -3,7 +3,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {TaskService} from '../services/task.service';
 
 @Component({
-    selector: 'inputField',
+    selector: 'NewTaskForm',
     imports: [ReactiveFormsModule],
     standalone: true,
     template: `
@@ -29,8 +29,8 @@ import {TaskService} from '../services/task.service';
                    <div class="flex flex-col gap-1">
                         <label class="text-sm font-semibold text-slate-600 ml-1">Due Date</label>
                         <input type="date"
-                               [formControl]="taskForm.controls.date"
-                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800">
+                               class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800"
+                               [formControl]="taskForm.controls.date">
                    </div>
 
                    <div class="flex flex-col gap-1">
@@ -57,7 +57,7 @@ import {TaskService} from '../services/task.service';
 })
 
 
-export class myInput {
+export class NewTaskForm {
 
     self = inject(ViewContainerRef)
     visible = model<boolean>()
