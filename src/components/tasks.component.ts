@@ -2,7 +2,6 @@ import {Component, inject, model} from "@angular/core";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {TaskService} from "../services/task.service"
 import {NgTemplateOutlet} from "@angular/common";
-import {ROUTER_OUTLET_DATA} from "@angular/router";
 
 
 //Main components
@@ -36,7 +35,8 @@ import {ROUTER_OUTLET_DATA} from "@angular/router";
 
                                        <div class="task" [class.completed]="task.completed">
                                             <ng-container
-                                                    *ngTemplateOutlet="task.edit ? editMode : viewMode; context: { $implicit: task }"/>
+                                                    *ngTemplateOutlet="task.edit ? editMode : viewMode; context: { $implicit: task }"
+                                            />
                                        </div>
                                   </div>
                              }
@@ -65,7 +65,7 @@ import {ROUTER_OUTLET_DATA} from "@angular/router";
                                   </svg>
                              </button>
                              <!--Edit-->
-                             <button (click)="taskService.edit(task.id); newName.setValue(task.name); newDescription.setValue(task.description); newDateDue.setValue(task.dateDue)"
+                             <button (click)="onEdit(task)"
                                      class="p-1.5 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-lg transition-colors"
                                      title="Edit task">
                                   <svg class="h-5 w-5">
@@ -88,29 +88,30 @@ import {ROUTER_OUTLET_DATA} from "@angular/router";
 
          <!-- Edit Mode Template -->
          <ng-template #editMode let-task>
+              @let form = getTaskForm(task);
               <div class="flex flex-col gap-3">
                    <!--Task name-->
                    <input type="text"
                           class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
-                          [formControl]="newName"
+                          [formControl]="form.newName"
                           placeholder="Task Name">
                    <!--Date Due-->
                    <input type="date"
                           class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800"
-                          [formControl]="newDateDue">
+                          [formControl]="form.newDateDue">
                    <!--Task Description-->
                    <textarea
                            class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none placeholder:text-slate-400"
                            rows="3"
-                           [formControl]="newDescription"
+                           [formControl]="form.newDescription"
                            [placeholder]="'Task Description'"
                    ></textarea>
                    <div class="flex gap-2 justify-end mt-2">
-                        <button (click)="taskService.edit(task.id)"
+                        <button (click)="onCancel(task.id)"
                                 class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors font-medium">
                              Cancel
                         </button>
-                        <button (click)="taskService.updateTask(task.id, {newName, newDescription, newDateDue})"
+                        <button (click)="onSave(task.id)"
                                 class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg transition-colors font-medium shadow-sm">
                              Save
                         </button>
@@ -122,9 +123,40 @@ import {ROUTER_OUTLET_DATA} from "@angular/router";
 })
 export class TasksComponent {
     taskService = inject(TaskService)
-    newName = new FormControl();
-    newDescription = new FormControl();
-    newDateDue = new FormControl();
+    taskForms: Map<number, { newName: FormControl, newDescription: FormControl, newDateDue: FormControl }> = new Map();
+
+    getTaskForm(task: any) {
+        if (!this.taskForms.has(task.id)) {
+            this.taskForms.set(task.id, {
+                newName: new FormControl(task.name),
+                newDescription: new FormControl(task.description),
+                newDateDue: new FormControl(task.dateDue)
+            });
+        }
+        return this.taskForms.get(task.id)!;
+    }
+
+    onEdit(task: any) {
+        const form = this.getTaskForm(task);
+        form.newName.setValue(task.name);
+        form.newDescription.setValue(task.description);
+        form.newDateDue.setValue(task.dateDue);
+        this.taskService.edit(task.id);
+    }
+
+    onCancel(taskId: number) {
+        this.taskForms.delete(taskId);
+        this.taskService.edit(taskId);
+    }
+
+    onSave(taskId: number) {
+        const form = this.taskForms.get(taskId);
+        if (form) {
+            this.taskService.updateTask(taskId, form);
+            this.taskForms.delete(taskId);
+        }
+    }
+
     data__ = model<boolean>()
 
     blankTask(dateDue:string) {
