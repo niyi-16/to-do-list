@@ -1,5 +1,6 @@
 import {
   Component,
+  HostListener,
   inject,
   signal,
   ViewContainerRef, ViewRef,
@@ -68,22 +69,12 @@ export class AppComponent {
     tasks: signal(false),
   }
 
-  constructor(){
-    console.log(window.innerHeight, window.outerHeight, window.scrollY)
+  constructor(){}
 
-    document.addEventListener("keydown", (key) => {
-      if (key.altKey && key.key === "a") {
-        console.log("Alt + A pressed")
-        this.elementsDisplay.tasks.set(!this.elementsDisplay.tasks())
-      }
-    })
-
-  }
-
-  ngAfterViewInit(){
-    this.self.element.nativeElement.onKeyDown = (key:KeyboardEvent) =>
-      console.log(key)
-
+  @HostListener("window:keydown.alt.a", ["$event"])
+  onAltA(event: KeyboardEvent) {
+    console.log("Alt + A pressed")
+    this.elementsDisplay.tasks.set(!this.elementsDisplay.tasks())
   }
 
 }
