@@ -1,0 +1,51 @@
+name: Getting Started with GitHub Actions
+run-name: "First Workflow"
+on:
+  push:
+    branches: [ tests ]
+jobs:
+  Job-1:
+    name: First Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Hello World
+        run: echo "Hello World from GitHub Actions"
+
+      - name: Print envs
+        run: echo "Hello World Again but with a different message ${{ env }}"
+
+      - name: Print GitHub Context
+        run: echo "HubContext ${{ toJson(github) }}"
+
+  Job-2:
+    name: Second Job
+    needs: Job-1
+    runs-on: ubuntu-latest
+    steps:
+      - name: List Files in Root Directory
+        run: ls /
+
+      - name: List Files in Current Directory
+        run: ls .
+
+  Job-3:
+    needs: [Job-1, Job-2]
+    name: Third Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: clone a repo
+        run: git clone https://github.com/niyi-16/portfolio.git
+
+      - name: Install and Build
+        id: inst-and-build
+        run: cd portfolio && npm install && npm run build
+
+      - if: steps.inst-and-build.outcome == 'failure'
+        name: Build Failed
+        run: echo "Build failed for portfolio"
+
+      - if: steps.inst-and-build.outcome == 'success'
+        name: Build Successful
+        run: echo "Build successful for portfolio" && ls .
+
+      - run:  cd dist && ls .
