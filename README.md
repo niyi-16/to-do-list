@@ -26,31 +26,23 @@ git clone https://github.com/niyi-16/to-do-list.git
 cd to-do-list
 ```
 
+
 ### 2. Install dependencies
 
 ```bash
 npm install
 ```
+____
+# Runnig the application
+You can run the application by:
 
-### 3. Start the Backend Server
-
-The application requires a backend server to handle data persistence. Run the following command in a terminal:
-
-```bash
-npm run dbserver
-```
-
-This will start the Express server at `http://localhost:3001`. On the first run, it will automatically create a SQLite database file at `src/tasks.db`.
-
-### 4. Start the Frontend Development Server
-
-In a **separate terminal window**, run:
+### 1. Running the application through the start script
 
 ```bash
 npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4201/`.
+Once the Application is running, open your browser and navigate to `http://localhost:4201/`.
 
 ## Development Commands
 

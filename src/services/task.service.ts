@@ -1,22 +1,16 @@
 import { Injectable } from '@angular/core';
-import {Task} from "../interfaces/task.interface"
+import {Task} from "@interfaces/task.interface"
 import {formatDate} from "@angular/common";
 
 @Injectable({ providedIn: 'root'})
 export class TaskService{
-  static counter =  0;
-  readonly api:string = 'http://localhost:3001'
+  readonly api:string = import.meta.env["NG_APP_API_URL"];
 
   tasks: Task[] = []
   dates: string[] = []
   tasksRecycler: Task[] = [];
 
-  constructor() {
-    this.loadTasks()
-  }
-
   async loadTasks(){
-    // console.clear()
     const activeData:{message:string, data:Task[]} = await fetch(`${this.api}/tasks`, {method:"GET"}).then(res => res.json())
     const deletedData:Task[] = await fetch(`${this.api}/deleted`, {method:"GET"}).then(res => res.json())
     console.log("active data", activeData)
@@ -29,9 +23,6 @@ export class TaskService{
     this.dates = [...new Set(dates)] as string[]
     console.log(this.dates)
 
-  }
-
-  ngAfterInitView(){
   }
 
   async addTask(values:any){
@@ -59,7 +50,7 @@ export class TaskService{
 
     if (!post.ok) return;
 
-    this.loadTasks()
+    await this.loadTasks()
   }
   async completeTask(id:number){
     this.tasks.filter(task => task.id === id)
@@ -93,14 +84,14 @@ export class TaskService{
     });
 
     if (!patch.ok) return;
-    this.loadTasks();
+    await this.loadTasks();
   }
   async deleteTask(id: number) {
     const deleteTask = await fetch(`${this.api}/delete?id=${id}`, {method:"PATCH"})
     console.log(deleteTask)
     if (!deleteTask.ok) return;
 
-    this.loadTasks()
+    await this.loadTasks()
   }
 
   async restoreTask(id:number){
@@ -108,7 +99,7 @@ export class TaskService{
     console.log(restoreTask)
     if (!restoreTask.ok) return;
 
-    this.loadTasks()
+    await this.loadTasks()
   }
 
   generateId(){

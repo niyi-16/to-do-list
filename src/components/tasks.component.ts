@@ -1,6 +1,6 @@
 import {Component, inject, model} from "@angular/core";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {TaskService} from "../services/task.service"
+import {TaskService} from "@services/task.service"
 import {NgTemplateOutlet} from "@angular/common";
 
 
@@ -124,6 +124,10 @@ import {NgTemplateOutlet} from "@angular/common";
 export class TasksComponent {
     taskService = inject(TaskService)
     taskForms: Map<number, { newName: FormControl, newDescription: FormControl, newDateDue: FormControl }> = new Map();
+
+    ngOnInit() {
+        this.taskService.loadTasks()
+    }
 
     getTaskForm(task: any) {
         if (!this.taskForms.has(task.id)) {

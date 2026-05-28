@@ -1,19 +1,15 @@
 import express from 'express'
-import cors from 'cors'
 import fs from 'fs'
+import "dotenv/config"
 import {DatabaseSync} from "node:sqlite"
 
-let port = 3001;
-let app = express();
-
-app.use(cors())
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const dbrouter = express.Router();
+const dbPath = 'tasks.db'
 
 //creates database if it doesn't exist
-if (!fs.existsSync('src/tasks.db')) {
+if (!fs.existsSync(dbPath)) {
     console.log("Database doesn't exist, creating...")
-    const db = new DatabaseSync('src/tasks.db')
+    const db = new DatabaseSync(dbPath)
     db.exec(`create table tasks
              (
                  id          varchar(12)
@@ -30,8 +26,8 @@ if (!fs.existsSync('src/tasks.db')) {
 else console.log("Database already exists")
 
 // GET ALL OPEN TASKS
-app.get("/tasks", (req, res) => {
-    const db = new DatabaseSync('src/tasks.db')
+dbrouter.get("/tasks", (req, res) => {
+    const db = new DatabaseSync(dbPath)
 
     let tasks = db.prepare("SELECT * FROM tasks where deleted = 0").all();
 
@@ -45,16 +41,16 @@ app.get("/tasks", (req, res) => {
 })
 
 // GET DELETED TASKS
-app.get("/deleted", (req, res) => {
-    const db = new DatabaseSync('src/tasks.db')
+dbrouter.get("/deleted", (req, res) => {
+    const db = new DatabaseSync(dbPath)
     let tasks = db.prepare("SELECT * FROM tasks WHERE deleted = 1").all();
 
     res.json(tasks)
 })
 
 // ADD NEW TASK
-app.post("/tasks", (req, res) => {
-    const db = new DatabaseSync('src/tasks.db')
+dbrouter.post("/tasks", (req, res) => {
+    const db = new DatabaseSync(dbPath)
 
     let body = req.body;
     console.log(body);
@@ -73,12 +69,12 @@ app.post("/tasks", (req, res) => {
 })
 
 //update task
-app.patch("/tasks", (req, res) => {
+dbrouter.patch("/tasks", (req, res) => {
     const {id, ...others} = req.body
 
     if (!id) return res.status(404).send("No id provided")
 
-    const db = new DatabaseSync('src/tasks.db')
+    const db = new DatabaseSync(dbPath)
 
     const updates = Object.keys(others).map(key => `${key} = ?`).join(', ')
     const values = Object.values(others)
@@ -95,12 +91,12 @@ app.patch("/tasks", (req, res) => {
 
 
 //complete task
-app.patch("/complete", (req, res) => {
+dbrouter.patch("/complete", (req, res) => {
     const {id} = req.query
 
     if (!id) return res.status(404).send("No id provided")
 
-    const db = new DatabaseSync('src/tasks.db')
+    const db = new DatabaseSync(dbPath)
 
     db.prepare(`Update tasks set completed = case
                 when 
@@ -113,28 +109,26 @@ app.patch("/complete", (req, res) => {
 
 
 //'delete' task
-app.patch("/delete", (req, res) => {
+dbrouter.patch("/delete", (req, res) => {
     const {id} = req.query
 
     if (!id) return res.status(404).send("No id provided")
 
-    const db = new DatabaseSync('src/tasks.db')
+    const db = new DatabaseSync(dbPath)
 
     db.prepare(`Update tasks set deleted = 1 WHERE id = ? `).run(id.toString())
     res.send({message: "Task deleted"})
 })
 
-app.patch("/restore", (req, res) => {
+dbrouter.patch("/restore", (req, res) => {
     const {id} = req.query
 
     if (!id) return res.status(404).send("No id provided")
 
-    const db = new DatabaseSync('src/tasks.db')
+    const db = new DatabaseSync(dbPath)
 
     db.prepare(`Update tasks set deleted = 0 WHERE id = ? `).run(id.toString())
     res.send({message: "Task restored!"})
 })
 
-app.listen(port, (error) =>{
-    console.log(`Example app listening on port http://localhost:${port}`)});
-
+export {dbrouter}
