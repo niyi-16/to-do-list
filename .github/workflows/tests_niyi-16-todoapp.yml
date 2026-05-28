@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - niyi-16-todoapp
 on:
   push:
     branches:
-      - master
+      - tests
   workflow_dispatch:
 
 jobs:
@@ -64,4 +64,30 @@ jobs:
           app-name: 'niyi-16-todoapp'
           slot-name: 'Production'
           package: .
+
+  pull-req:
+    permissions:
+      pull-requests: write
+      contents: read
+    needs: [ deploy ]
+    name: Create and Merge Pull Request
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request for ${{github.ref_name}} and merge into master
+        run: |
+          # Create PR if it doesn't exist
+          pr_url=$(gh pr create -B master -H ${{github.ref_name}} --title "Automated Pull Request" --body "This PR was 
+          created and 
+          merged automatically by GitHub Actions." 2>/dev/null || gh pr list -H tests -B master --json url -q '.[0].url')
           
+          if [ -n "$pr_url" ]; then
+            echo "PR URL: $pr_url"
+            gh pr merge "$pr_url" --merge --auto
+          else
+            echo "No PR created or found."
+          fi
