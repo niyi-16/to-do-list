@@ -25,14 +25,14 @@ import {TaskService} from '@services/task.service';
                         <input type='text' placeholder="What needs to be done?"
                                [formControl]="taskForm.controls.name"
                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 
-                                      focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 placeholder:text-slate-400">
+                                      focus:ring-indigo-500 outline-none transition-all text-slate-800">
                    </div>
 
                    <div class="flex flex-col gap-1">
                         <label class="text-sm font-semibold text-slate-600 ml-1">Due Date</label>
                         <input type="date" 
                                class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 
-                               focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800"
+                               focus:ring-indigo-500 outline-none transition-all text-slate-800"
                                [formControl]="taskForm.controls.date">
                    </div>
 
@@ -41,8 +41,7 @@ import {TaskService} from '@services/task.service';
                         <textarea [formControl]="taskForm.controls.description"
                                   rows="4"
                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 
-                                  focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 
-                                  placeholder:text-slate-400 resize-none" 
+                                  focus:ring-indigo-500 outline-none transition-all text-slate-800 resize-none" 
                                   placeholder="Add some details..."></textarea>
                    </div>
               </div>
