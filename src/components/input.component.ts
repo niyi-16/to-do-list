@@ -1,6 +1,6 @@
 import { Component,inject, model, ViewContainerRef} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {TaskService} from '../services/task.service';
+import {TaskService} from '@services/task.service';
 
 @Component({
     selector: 'NewTaskForm',
@@ -10,6 +10,7 @@ import {TaskService} from '../services/task.service';
          <div class="flex flex-col gap-4">
               <div class="flex justify-between items-center mb-2">
                    <h3 class="text-xl font-bold text-slate-800">Create New Task</h3>
+                   <!-- Close Button -->
                    <button (click)="visible.set(false)" 
                            class="p-2 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-full transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,13 +24,15 @@ import {TaskService} from '../services/task.service';
                         <label class="text-sm font-semibold text-slate-600 ml-1">Task Title</label>
                         <input type='text' placeholder="What needs to be done?"
                                [formControl]="taskForm.controls.name"
-                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 placeholder:text-slate-400">
+                               class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 
+                                      focus:ring-indigo-500 outline-none transition-all text-slate-800">
                    </div>
 
                    <div class="flex flex-col gap-1">
                         <label class="text-sm font-semibold text-slate-600 ml-1">Due Date</label>
-                        <input type="date"
-                               class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800"
+                        <input type="date" 
+                               class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 
+                               focus:ring-indigo-500 outline-none transition-all text-slate-800"
                                [formControl]="taskForm.controls.date">
                    </div>
 
@@ -37,7 +40,8 @@ import {TaskService} from '../services/task.service';
                         <label class="text-sm font-semibold text-slate-600 ml-1">Description</label>
                         <textarea [formControl]="taskForm.controls.description"
                                   rows="4"
-                                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 placeholder:text-slate-400 resize-none" 
+                                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 
+                                  focus:ring-indigo-500 outline-none transition-all text-slate-800 resize-none" 
                                   placeholder="Add some details..."></textarea>
                    </div>
               </div>
@@ -59,6 +63,10 @@ import {TaskService} from '../services/task.service';
 
 export class NewTaskForm {
 
+    log(message: string) {
+        console.log(message);
+    }
+
     self = inject(ViewContainerRef)
     visible = model<boolean>()
 
@@ -67,7 +75,7 @@ export class NewTaskForm {
     taskForm = new FormGroup({
         name: new FormControl(),
         description: new FormControl(),
-        date: new FormControl()
+        date: new FormControl(new Date().toISOString().split('T')[0]),
     });
 
     ngOnInit(){

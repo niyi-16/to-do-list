@@ -1,12 +1,12 @@
 import {
   Component,
+  HostListener,
   inject,
   signal,
-  ViewContainerRef, ViewRef,
+  ViewContainerRef
 
 } from '@angular/core';
-import { NewTaskForm} from '../components/input.component';
-import { TasksComponent} from "../components/tasks.component";
+import { NewTaskForm} from '@components/input.component';
 import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 
 @Component({
@@ -61,29 +61,19 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
   ` ,
 })
 export class AppComponent {
-  title = 'to-do-list';
+  title = 'To Do List';
   self = inject(ViewContainerRef)
   // div = viewChild(NewTaskForm)
   elementsDisplay = {
     tasks: signal(false),
   }
 
-  constructor(){
-    console.log(window.innerHeight, window.outerHeight, window.scrollY)
+  constructor(){}
 
-    document.addEventListener("keydown", (key) => {
-      if (key.altKey && key.key === "a") {
-        console.log("Alt + A pressed")
-        this.elementsDisplay.tasks.set(!this.elementsDisplay.tasks())
-      }
-    })
-
-  }
-
-  ngAfterViewInit(){
-    this.self.element.nativeElement.onKeyDown = (key:KeyboardEvent) =>
-      console.log(key)
-
+  @HostListener("window:keydown.alt.a", ["$event"])
+  onAltA(event: KeyboardEvent) {
+    console.log("Alt + A pressed")
+    this.elementsDisplay.tasks.set(!this.elementsDisplay.tasks())
   }
 
 }

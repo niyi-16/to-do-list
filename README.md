@@ -2,11 +2,12 @@
 
 A modern, clean, and professional To-Do List application built with **Angular 19** and **Tailwind CSS**, featuring a **Node.js/Express** backend with **SQLite** for data persistence.
 
+See Working Demo [here](https://todo.nagant.cloud)
 ## Features
 
 - **Task Management**: Create, update, complete, and delete tasks.
 - **Date Grouping**: Tasks are automatically grouped by their due dates for better organization.
-- **Modern UI**: Styled with Tailwind CSS, featuring a responsive design, modal overlays, and clean typography.
+- **Modern(-ish) UI**: Styled with Tailwind CSS, featuring a responsive design, modal overlays, and clean typography.
 - **Recycle Bin**: Restore deleted tasks from the "Deleted" view.
 - **Persistent Storage**: Data is stored locally in a SQLite database.
 
@@ -26,51 +27,23 @@ git clone https://github.com/niyi-16/to-do-list.git
 cd to-do-list
 ```
 
+
 ### 2. Install dependencies
 
 ```bash
 npm install
 ```
+____
+# Runnig the application
+You can run the application by:
 
-### 3. Start the Backend Server
-
-The application requires a backend server to handle data persistence. Run the following command in a terminal:
-
-```bash
-npm run dbserver
-```
-
-This will start the Express server at `http://localhost:3001`. On the first run, it will automatically create a SQLite database file at `src/tasks.db`.
-
-### 4. Start the Frontend Development Server
-
-In a **separate terminal window**, run:
+### 1. Running the application through the start script
 
 ```bash
 npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4201/`.
-
-## Development Commands
-
-### Code Scaffolding
-
-To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-### Building
-
-To build the project for production:
-
-```bash
-npm run build
-```
-
-The build artifacts will be stored in the `dist/` directory.
+Once the Application is running, open your browser and navigate to `http://localhost:4201/`.
 
 ## Project Structure
 
