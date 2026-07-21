@@ -1,28 +1,12 @@
 import { Injectable } from '@angular/core';
-import {Task} from "@interfaces/task.interface"
-import {formatDate} from "@angular/common";
 
 @Injectable({ providedIn: 'root'})
 export class TaskService{
   readonly api:string = import.meta.env["NG_APP_API_URL"];
 
-  tasks: Task[] = []
-  dates: string[] = []
-  tasksRecycler: Task[] = [];
 
   async loadTasks(){
-    const activeData:{message:string, data:Task[]} = await fetch(`${this.api}/tasks`, {method:"GET"}).then(res => res.json())
-    const deletedData:Task[] = await fetch(`${this.api}/deleted`, {method:"GET"}).then(res => res.json())
-    console.log("active data", activeData)
-    console.log(deletedData)
-    // return {activeData, deletedData}
-    this.tasks = activeData["data"]
-    this.tasksRecycler = deletedData
-    ///////////////////////////////////////
-    const dates = new Set(this.tasks.map(task => task.dateDue).sort())
-    this.dates = [...new Set(dates)] as string[]
-    console.log(this.dates)
-
+    return Promise.all([this.getTasks(), this.getDeletedTasks()])
   }
 
   async addTask(values:any){
@@ -52,19 +36,7 @@ export class TaskService{
 
     await this.loadTasks()
   }
-  async completeTask(id:number){
-    this.tasks.filter(task => task.id === id)
-        .map(task => task.completed = !task.completed)
 
-    const completeTask = await fetch(`${this.api}/complete?id=${id}`, {method:"PATCH"})
-    console.log(completeTask)
-    if (!completeTask.ok) return;
-  }
-
-  edit(id:number){
-    this.tasks.filter(task => task.id === id)
-        .map(task => task.edit = !task.edit)
-  }
 
   async updateTask(id: number, values: any) {
     const { newName, newDescription, newDateDue } = values;
@@ -87,19 +59,27 @@ export class TaskService{
     await this.loadTasks();
   }
   async deleteTask(id: number) {
-    const deleteTask = await fetch(`${this.api}/delete?id=${id}`, {method:"PATCH"})
+    const deleteTask = await fetch(`${this.api}/tasks?id=${id}`, {method:"DELETE"})
     console.log(deleteTask)
-    if (!deleteTask.ok) return;
-
-    await this.loadTasks()
+    return deleteTask.ok
   }
 
   async restoreTask(id:number){
-    const restoreTask = await fetch(`${this.api}/restore?id=${id}`, {method:"PATCH"})
+    const restoreTask = await fetch(`${this.api}/tasks/restore?id=${id}`, {method:"PATCH"})
     console.log(restoreTask)
-    if (!restoreTask.ok) return;
+   return restoreTask.ok
+  }
 
-    await this.loadTasks()
+  async getTasks(){
+    const tasks = await fetch(`${this.api}/tasks`)
+    if (!tasks.ok) return;
+    return await tasks.json()
+  }
+
+  async getDeletedTasks(){
+    const tasks = await fetch(`${this.api}/tasks/deleted`)
+    if (!tasks.ok) return;
+    return await tasks.json()
   }
 
   generateId(){

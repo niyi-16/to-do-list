@@ -1,8 +1,8 @@
-import {Component, inject, model} from "@angular/core";
+import {Component, inject, model, signal} from "@angular/core";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {TaskService} from "@services/task.service"
 import {NgTemplateOutlet} from "@angular/common";
-
+import {Task} from "@interfaces/task.interface"
 
 //Main components
 @Component({
@@ -11,7 +11,7 @@ import {NgTemplateOutlet} from "@angular/common";
     standalone: true,
     imports: [ReactiveFormsModule, NgTemplateOutlet],
     template: `
-         @for (dateDue of taskService.dates; track dateDue) {
+         @for (dateDue of dates; track dateDue) {
               <div class="mb-10">
                    <div class="flex items-center gap-4 mb-4">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">
@@ -28,7 +28,7 @@ import {NgTemplateOutlet} from "@angular/common";
                    </div>
 
                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @for (task of tasks; track task.id) {
+                        @for (task of tasks(); track task.id) {
                              @if (task.dateDue === dateDue) {
                                   <div class="group relative bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all"
                                        [class.bg-slate-50]="task.completed">
@@ -57,7 +57,7 @@ import {NgTemplateOutlet} from "@angular/common";
                         <!--Modifier Buttons-->
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                              <!--Mark as complete/incomplete-->
-                             <button (click)="taskService.completeTask(task.id)"
+                             <button (click)="completeTask(task.id)"
                                      class="p-1.5 hover:bg-green-50 text-slate-400 hover:text-green-600 rounded-lg transition-colors"
                                      [title]="task.completed ? 'Mark as incomplete' : 'Mark as complete'">
                                   <svg class="h-5 w-5">
@@ -73,7 +73,7 @@ import {NgTemplateOutlet} from "@angular/common";
                                   </svg>
                              </button>
                              <!--Delete-->
-                             <button (click)="taskService.deleteTask(task.id)"
+                             <button (click)="onDelete(task.id)"
                                      class="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition-colors"
                                      title="Delete task">
                                   <svg class="h-5 w-5">
@@ -92,16 +92,16 @@ import {NgTemplateOutlet} from "@angular/common";
               <div class="flex flex-col gap-3">
                    <!--Task name-->
                    <input type="text"
-                          class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
+                          class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all placeholder:text-slate-400"
                           [formControl]="form.newName"
                           placeholder="Task Name">
                    <!--Date Due-->
                    <input type="date"
-                          class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800"
+                          class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800"
                           [formControl]="form.newDateDue">
                    <!--Task Description-->
                    <textarea
-                           class="w-full px-3 py-2 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none placeholder:text-slate-400"
+                           class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none placeholder:text-slate-400"
                            rows="3"
                            [formControl]="form.newDescription"
                            [placeholder]="'Task Description'"
@@ -122,11 +122,21 @@ import {NgTemplateOutlet} from "@angular/common";
 
 })
 export class TasksComponent {
+    readonly api:string = import.meta.env["NG_APP_API_URL"];
+
+    tasks = signal<Task[]>([])
+    dates: string[] = []
     taskService = inject(TaskService)
     taskForms: Map<number, { newName: FormControl, newDescription: FormControl, newDateDue: FormControl }> = new Map();
 
     ngOnInit() {
-        this.taskService.loadTasks()
+        this.taskService.getTasks().then(
+            (tasks) => {
+                this.tasks.set(tasks.data)
+                const dates = new Set(this.tasks().map(task => task.dateDue).sort())
+                this.dates = [...new Set(dates)] as string[]
+            }
+        )
     }
 
     getTaskForm(task: any) {
@@ -145,12 +155,20 @@ export class TasksComponent {
         form.newName.setValue(task.name);
         form.newDescription.setValue(task.description);
         form.newDateDue.setValue(task.dateDue);
-        this.taskService.edit(task.id);
+        this.edit(task.id);
+    }
+
+    onDelete(taskId: number) {
+        const deleteTask = this.taskService.deleteTask(taskId)
+        if (!deleteTask) return;
+        this.taskForms.delete(taskId);
+        this.tasks.update(tasks => tasks.filter(task => task.id !== taskId))
+
     }
 
     onCancel(taskId: number) {
         this.taskForms.delete(taskId);
-        this.taskService.edit(taskId);
+        this.edit(taskId);
     }
 
     onSave(taskId: number) {
@@ -163,6 +181,20 @@ export class TasksComponent {
 
     data__ = model<boolean>()
 
+    async completeTask(id:number){
+        this.tasks().filter(task => task.id === id)
+            .map(task => task.completed = !task.completed)
+
+        const completeTask = await fetch(`${this.api}/complete?id=${id}`, {method:"PATCH"})
+        console.log(completeTask)
+        if (!completeTask.ok) return;
+    }
+
+    edit(id:number){
+        this.tasks().filter(task => task.id === id)
+            .map(task => task.edit = !task.edit)
+    }
+
     blankTask(dateDue:string) {
         return {
             name: {value: "New Task"},
@@ -170,17 +202,13 @@ export class TasksComponent {
             date: {value: dateDue}
         }
     }
-
-    get tasks() {
-        return this.taskService.tasks
-    }
 }
 
 @Component({
     selector: 'taskDeleted',
     standalone: true,
     template: `
-         @if (taskService.tasksRecycler.length > 0) {
+         @if (tasksRecycler().length > 0) {
               <div class="flex items-center gap-4 mb-6">
                    <h3 class="text-sm font-bold uppercase tracking-wider text-red-400">
                         Deleted tasks
@@ -189,12 +217,12 @@ export class TasksComponent {
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                   @for (r_task of recycledTasks; track r_task.id) {
+                   @for (r_task of tasksRecycler(); track r_task.id) {
                         <div class="group relative bg-white border border-slate-200 rounded-xl p-4 shadow-sm opacity-75">
                              <div class="task completed flex flex-col h-full">
                                   <div class="flex justify-between items-start mb-2">
                                        <h2 class="text-lg font-bold text-slate-800 leading-tight">{{ r_task.name }}</h2>
-                                       <button (click)="taskService.restoreTask(r_task.id)"
+                                       <button (click)="onRestore(r_task.id)"
                                                class="p-1.5 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-lg transition-all"
                                                title="Restore task">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
@@ -224,9 +252,20 @@ export class TasksComponent {
 })
 export class TaskDetetedComponent {
     taskService = inject(TaskService)
+    tasksRecycler = signal<Task[]>([]);
 
-    get recycledTasks() {
-        return this.taskService.tasksRecycler
+    ngOnInit() {
+        this.taskService.getDeletedTasks().then(
+            (tasks) => {
+                this.tasksRecycler.set(tasks)
+            }
+        )
+    }
+
+    onRestore(taskId: number) {
+        const restoreTask = this.taskService.restoreTask(taskId)
+        if (!restoreTask) return;
+        this.tasksRecycler.update(tasks => tasks.filter(task => task.id !== taskId))
     }
 
 }

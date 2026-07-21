@@ -3,11 +3,10 @@ import {
   HostListener,
   inject,
   signal,
-  ViewContainerRef, ViewRef,
+  ViewContainerRef
 
 } from '@angular/core';
-import { NewTaskForm} from '../components/input.component';
-import { TasksComponent} from "../components/tasks.component";
+import { NewTaskForm} from '@components/input.component';
 import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
 
 @Component({
@@ -62,7 +61,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
   ` ,
 })
 export class AppComponent {
-  title = 'to-do-list';
+  title = 'To Do List';
   self = inject(ViewContainerRef)
   // div = viewChild(NewTaskForm)
   elementsDisplay = {

@@ -2,11 +2,12 @@
 
 A modern, clean, and professional To-Do List application built with **Angular 19** and **Tailwind CSS**, featuring a **Node.js/Express** backend with **SQLite** for data persistence.
 
+See Working Demo [here](https://todo.nagant.cloud)
 ## Features
 
 - **Task Management**: Create, update, complete, and delete tasks.
 - **Date Grouping**: Tasks are automatically grouped by their due dates for better organization.
-- **Modern UI**: Styled with Tailwind CSS, featuring a responsive design, modal overlays, and clean typography.
+- **Modern(-ish) UI**: Styled with Tailwind CSS, featuring a responsive design, modal overlays, and clean typography.
 - **Recycle Bin**: Restore deleted tasks from the "Deleted" view.
 - **Persistent Storage**: Data is stored locally in a SQLite database.
 
@@ -43,26 +44,6 @@ npm start
 ```
 
 Once the Application is running, open your browser and navigate to `http://localhost:4201/`.
-
-## Development Commands
-
-### Code Scaffolding
-
-To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-### Building
-
-To build the project for production:
-
-```bash
-npm run build
-```
-
-The build artifacts will be stored in the `dist/` directory.
 
 ## Project Structure
 

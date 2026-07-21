@@ -26,7 +26,7 @@ if (!fs.existsSync(dbPath)) {
 else console.log("Database already exists")
 
 // GET ALL OPEN TASKS
-dbrouter.get("/tasks", (req, res) => {
+dbrouter.get("/", (req, res) => {
     const db = new DatabaseSync(dbPath)
 
     let tasks = db.prepare("SELECT * FROM tasks where deleted = 0").all();
@@ -49,7 +49,7 @@ dbrouter.get("/deleted", (req, res) => {
 })
 
 // ADD NEW TASK
-dbrouter.post("/tasks", (req, res) => {
+dbrouter.post("/", (req, res) => {
     const db = new DatabaseSync(dbPath)
 
     let body = req.body;
@@ -69,7 +69,7 @@ dbrouter.post("/tasks", (req, res) => {
 })
 
 //update task
-dbrouter.patch("/tasks", (req, res) => {
+dbrouter.patch("/", (req, res) => {
     const {id, ...others} = req.body
 
     if (!id) return res.status(404).send("No id provided")
@@ -109,7 +109,7 @@ dbrouter.patch("/complete", (req, res) => {
 
 
 //'delete' task
-dbrouter.patch("/delete", (req, res) => {
+dbrouter.delete("/", (req, res) => {
     const {id} = req.query
 
     if (!id) return res.status(404).send("No id provided")
@@ -120,6 +120,7 @@ dbrouter.patch("/delete", (req, res) => {
     res.send({message: "Task deleted"})
 })
 
+/*RESTORE DELETED TASKS*/
 dbrouter.patch("/restore", (req, res) => {
     const {id} = req.query
 

@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.static('dist/to-do-list/browser'));
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api", dbrouter)
+app.use("/api/tasks", dbrouter)
 
 app.get("/", (req, res) => {
     res.sendFile('index.html')
